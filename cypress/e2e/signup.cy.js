@@ -1,74 +1,71 @@
 import signupPage from '../pages/signupPage'
 
-describe('Testes de Registo (Caso 1 e Caso 5)', () => {
-  
-  // Caso 1: Registo completo de utilizador e exclusão de conta
-  it('Deve registar um novo utilizador com sucesso e apagar a conta no final', () => {
-    // Gerar um e-mail dinâmico para garantir que nunca se repete entre execuções
-    const timestamp = Date.now()
-    const emailDinamico = `teste_pgats_${timestamp}@test.com`
+describe('Automação de Registo - Automation Exercise', () => {
 
-    signupPage.visitPage()
-    
-    // Iniciar registo
-    signupPage.startSignup('Utilizador PGATS', emailDinamico)
-    
-    // Preencher detalhes da conta
-    signupPage.fillAccountDetails('SenhaForte123!', '10', 'January', '1995')
-    
-    // Preencher morada e dados de contacto
-    signupPage.fillAddressDetails(
-      'Jussara', 
-      'Sousa', 
-      'Empresa Teste', 
-      'Rua dos Testes, 123', 
-      'United States', 
-      'California', 
-      'Los Angeles', 
-      '90001', 
-      '31999999999'
-    )
-    
-    // Validar se a conta foi criada com sucesso
-    signupPage.elements.accountCreatedHeader().should('be.visible')
-    signupPage.elements.continueButton().click()
-    
-    // Validar sessão iniciada
-    signupPage.elements.loggedInAs().should('be.visible')
-    
-    // Apagar a conta conforme requisitado no final do Caso 1
-    signupPage.deleteAccount()
-    signupPage.elements.accountDeletedHeader().should('be.visible')
+  beforeEach(() => {
+    cy.clearCookies()
+    cy.clearLocalStorage()
   })
 
-  // Caso 5: Deve exibir erro ao tentar registar com um e-mail já existente
-  // Caso 5: Deve exibir erro ao tentar registar com um e-mail já existente
-  it('Caso 5: Deve exibir erro ao tentar registar com um e-mail já existente', () => {
-    const emailExistente = `duplicado_${Date.now()}@test.com`
+  // (Opcional) Podes colocar aqui o teu teste de registo bem-sucedido (Caso 2)
+  it('Deve registar um novo utilizador com sucesso e apagar a conta no final', () => {
+    const timestamp = new Date().getTime()
+    const email = `utilizador_${timestamp}@test.com`
 
     signupPage.visitPage()
-    
-    // 1º Passo: Registamos e criamos a conta completa para o e-mail existir no sistema
-    signupPage.startSignup('Utilizador Existente', emailExistente)
-    signupPage.fillAccountDetails('Senha123!', '10', 'January', '1995')
-    signupPage.fillAddressDetails(
-      'Jussara', 
-      'Sousa', 
-      'Empresa Teste', 
-      'Rua dos Testes, 123', 
-      'United States', 
-      'California', 
-      'Los Angeles', 
-      '90001', 
-      '31999999999'
-    )
+    signupPage.startSignup('Utilizador PGATS', email)
+    signupPage.fillAccountDetails('SenhaForte123!')
+    signupPage.fillAddressDetails({
+      firstName: 'Jussara',
+      lastName: 'Sousa',
+      address: 'Rua dos Testes, 123',
+      country: 'United States',
+      state: 'Minas Gerais',
+      city: 'Belo Horizonte',
+      zipcode: '30000',
+      mobile: '31999999999'
+    })
+
     signupPage.elements.accountCreatedHeader().should('be.visible')
+    signupPage.elements.continueButton().click()
+    signupPage.elements.loggedInAs().should('be.visible')
+    
+    signupPage.deleteAccount()
+  })
 
-    // 2º Passo: Voltamos à página de registo e tentamos usar exatamente o mesmo e-mail
+  // --- COLOCA O CASO 5 EXATAMENTE AQUI ---
+  it('Caso 5: Deve exibir erro ao tentar registar com um e-mail já existente', () => {
+    const emailExistente = `duplicado_${new Date().getTime()}@test.com`
+
+    // 1º Passo: Criar a conta pela primeira vez
     signupPage.visitPage()
     signupPage.startSignup('Utilizador Existente', emailExistente)
-    
-    // 3º Passo: Validamos que a mensagem de erro de e-mail existente é exibida
+    signupPage.fillAccountDetails('Senha123!')
+    signupPage.fillAddressDetails({
+      firstName: 'Jussara',
+      lastName: 'Sousa',
+      address: 'Rua dos Testes, 123',
+      country: 'United States',
+      state: 'Minas Gerais',
+      city: 'Belo Horizonte',
+      zipcode: '30000',
+      mobile: '31999999999'
+    })
+    signupPage.elements.accountCreatedHeader().should('be.visible')
+    signupPage.elements.continueButton().click()
+
+    // Fazer logout
+    cy.get('a[href="/logout"]').click()
+
+    // Limpa totalmente os cookies e dados locais para o site não reencaminhar o utilizador
+    cy.clearAllCookies()
+    cy.clearAllLocalStorage()
+
+    // 2º Passo: Visita a página de novo e tenta usar o mesmo e-mail
+    signupPage.visitPage()
+    signupPage.startSignup('Outro Utilizador', emailExistente)
+
+    // 3º Passo: Valida a mensagem de erro de e-mail duplicado
     signupPage.elements.errorMessage()
       .should('be.visible')
       .and('contain', 'Email Address already exist!')
