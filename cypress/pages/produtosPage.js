@@ -8,7 +8,11 @@ const seletores = {
     precoProduto: '.product-information span span',
     disponibilidadeProduto: '.product-information p',
     condicaoProduto: '.product-information p',
-    marcaProduto: '.product-information p'
+    marcaProduto: '.product-information p',
+    
+    // Novos seletores para a busca (Caso 9)
+    inputBusca: '#search_product',
+    botaoBusca: '#submit_search'
 }
 
 module.exports = {
@@ -26,7 +30,6 @@ module.exports = {
     },
 
     validarDetalhesDoProduto() {
-        // Valida se os elementos principais da página de detalhes estão visíveis
         cy.url().should('include', '/product_details/1')
         cy.get(seletores.nomeProdutoDetalhe).should('be.visible')
         cy.get(seletores.categoriaProduto).should('contain', 'Category')
@@ -34,5 +37,16 @@ module.exports = {
         cy.get(seletores.disponibilidadeProduto).should('contain', 'Availability')
         cy.get(seletores.condicaoProduto).should('contain', 'Condition')
         cy.get(seletores.marcaProduto).should('contain', 'Brand')
+    },
+
+    // Novas ações para a busca (Caso 9)
+    buscarProduto(nomeProduto) {
+        cy.get(seletores.inputBusca).type(nomeProduto)
+        cy.get(seletores.botaoBusca).click()
+    },
+
+    validarProdutosBuscados(nomeEsperado) {
+        cy.get(seletores.tituloProdutos).should('be.visible').and('contain', 'Searched Products')
+        cy.get(seletores.listaProdutos).should('be.visible').and('contain', nomeEsperado)
     }
 }
