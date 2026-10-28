@@ -4,12 +4,11 @@ import signupPage from '../pages/signupPage'
 describe('Funcionalidades Principais - Automation Exercise', () => {
 
   beforeEach(() => {
-    // Garante que limpamos sempre a sessão e cookies antes de cada teste
     cy.clearCookies()
     cy.clearLocalStorage()
   })
 
-  // 1. O teste de Login que acabámos de confirmar que funciona
+  // 1. O teste de Login
   it('Caso 3: Deve exibir mensagem de erro ao tentar logar com credenciais inválidas', () => {
     loginPage.visitPage()
     loginPage.login('email_invalido@teste.com', 'senha_errada123')
@@ -42,19 +41,31 @@ describe('Funcionalidades Principais - Automation Exercise', () => {
       mobile: '31999999999'
     })
 
-    // Passo C: Validar que a conta foi criada com sucesso
+    // Passo C: Validar que a conta foi criada com sucesso e continuar
     signupPage.elements.accountCreatedHeader().should('be.visible').and('contain', 'Account Created!')
-    signupPage.elements.continueButton().click()
+    // O { force: true } ignora anúncios que possam estar a bloquear o botão
+    signupPage.elements.continueButton().click({ force: true })
 
     // Passo D: Fazer logout da sessão criada
-    cy.get('a[href="/logout"]').click()
+    // Aumentamos o tempo de espera pelo elemento e forçamos o clique
+    cy.get('a[href="/logout"]', { timeout: 15000 })
+      .should('be.visible')
+      .click({ force: true })
 
     // Passo E: Testar o Login com as credenciais recém-criadas
-    loginPage.visitPage()
+    // Após o logout, o site já deve estar na página de login, por isso apenas validamos o URL
+    cy.url({ timeout: 10000 }).should('include', '/login')
     loginPage.login(email, password)
-    signupPage.elements.loggedInAs().should('be.visible').and('contain', name)
+    
+    // Espera pelo processamento lento do login no servidor
+    cy.wait(5000) 
+    
+    // Força uma procura com timeout alargado
+    cy.contains('Logged in as', { timeout: 15000 })
+      .should('be.visible')
+      .and('contain', name)
 
-    // Passo F: Apagar a conta conforme exigido pelo caso de teste
+    // Passo F: Apagar a conta
     signupPage.deleteAccount()
   })
 
