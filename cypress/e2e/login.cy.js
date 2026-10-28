@@ -1,14 +1,56 @@
 import loginPage from '../pages/loginPage'
 import signupPage from '../pages/signupPage'
 
-describe('Funcionalidades Principais - Automation Exercise', () => {
+describe('Funcionalidades Principais de Login e Autenticação - Automation Exercise', () => {
+
+  const addressData = {
+    firstName: 'Jussara',
+    lastName: 'Sousa',
+    address: 'Rua dos Testes, 123',
+    country: 'United States',
+    state: 'Minas Gerais',
+    city: 'Belo Horizonte',
+    zipcode: '30000',
+    mobile: '31999999999'
+  }
 
   beforeEach(() => {
     cy.clearCookies()
     cy.clearLocalStorage()
   })
 
-  // 1. O teste de Login
+  it('Caso 2: Deve registar um novo utilizador, fazer login e apagar a conta no final', () => {
+    const timestamp = new Date().getTime()
+    const email = `usuario_${timestamp}@teste.com`
+    const password = 'senha123'
+    const name = 'Utilizador Teste'
+
+    // 1. Registo prévio da conta
+    signupPage.visitPage()
+    signupPage.startSignup(name, email)
+    signupPage.fillAccountDetails(password)
+    signupPage.fillAddressDetails(addressData)
+    signupPage.elements.accountCreatedHeader().should('be.visible').and('contain', 'Account Created!')
+    signupPage.elements.continueButton().click({ force: true })
+
+    // 2. Logout para testar o login
+    cy.get('a[href="/logout"]', { timeout: 15000 })
+      .should('be.visible')
+      .click({ force: true })
+
+    // 3. Login com credenciais válidas
+    cy.url({ timeout: 10000 }).should('include', '/login')
+    loginPage.login(email, password)
+
+    // Validação dinâmica sem cy.wait fixo
+    cy.contains('Logged in as', { timeout: 15000 })
+      .should('be.visible')
+      .and('contain', name)
+
+    // 4. Limpeza da conta
+    signupPage.deleteAccount()
+  })
+
   it('Caso 3: Deve exibir mensagem de erro ao tentar logar com credenciais inválidas', () => {
     loginPage.visitPage()
     loginPage.login('email_invalido@teste.com', 'senha_errada123')
@@ -17,55 +59,36 @@ describe('Funcionalidades Principais - Automation Exercise', () => {
       .and('contain', 'Your email or password is incorrect!')
   })
 
-  // 2. O Caso 2: Criar conta, fazer login e apagar no final
-  it('Caso 2: Deve registar um novo utilizador, fazer login e apagar a conta no final', () => {
+  it('Caso 4: Deve realizar o logout com sucesso e redirecionar para a página de login', () => {
     const timestamp = new Date().getTime()
-    const email = `usuario_${timestamp}@teste.com`
+    const email = `user_logout_${timestamp}@teste.com`
     const password = 'senha123'
-    const name = 'Utilizador Teste'
+    const name = 'Usuario Logout'
 
-    // Passo A: Registo inicial
+    // 1. Criar conta para garantir uma sessão ativa
     signupPage.visitPage()
     signupPage.startSignup(name, email)
-    
-    // Passo B: Preenchimento dos detalhes da conta e morada
     signupPage.fillAccountDetails(password)
-    signupPage.fillAddressDetails({
-      firstName: 'Jussara',
-      lastName: 'Sousa',
-      address: 'Rua dos Testes, 123',
-      country: 'United States',
-      state: 'Minas Gerais',
-      city: 'Belo Horizonte',
-      zipcode: '30000',
-      mobile: '31999999999'
-    })
-
-    // Passo C: Validar que a conta foi criada com sucesso e continuar
-    signupPage.elements.accountCreatedHeader().should('be.visible').and('contain', 'Account Created!')
-    // O { force: true } ignora anúncios que possam estar a bloquear o botão
+    signupPage.fillAddressDetails(addressData)
+    signupPage.elements.accountCreatedHeader().should('be.visible')
     signupPage.elements.continueButton().click({ force: true })
 
-    // Passo D: Fazer logout da sessão criada
-    // Aumentamos o tempo de espera pelo elemento e forçamos o clique
-    cy.get('a[href="/logout"]', { timeout: 15000 })
-      .should('be.visible')
-      .click({ force: true })
-
-    // Passo E: Testar o Login com as credenciais recém-criadas
-    // Após o logout, o site já deve estar na página de login, por isso apenas validamos o URL
-    cy.url({ timeout: 10000 }).should('include', '/login')
-    loginPage.login(email, password)
-    
-    // Espera pelo processamento lento do login no servidor
-    cy.wait(5000) 
-    
-    // Força uma procura com timeout alargado
+    // 2. Validar que a sessão está ativa
     cy.contains('Logged in as', { timeout: 15000 })
       .should('be.visible')
       .and('contain', name)
 
-    // Passo F: Apagar a conta
+    // 3. Executar o logout (Foco do Caso 4)
+    cy.get('a[href="/logout"]', { timeout: 15000 })
+      .should('be.visible')
+      .click({ force: true })
+
+    // 4. Validar redirecionamento para o ecrã de login
+    cy.url({ timeout: 10000 }).should('include', '/login')
+    cy.contains('Login to your account').should('be.visible')
+
+    // 5. Limpeza: reautenticar para apagar a conta
+    loginPage.login(email, password)
     signupPage.deleteAccount()
   })
 

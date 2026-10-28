@@ -4,6 +4,8 @@ Projeto prático de automação de testes End-to-End desenvolvido para validar o
 
 A estrutura utiliza o padrão **Page Object Model (POM)** para manter o código limpo e de fácil manutenção, além de rodar testes automatizados via **GitHub Actions** com relatórios visuais no **Mochawesome**.
 
+🔗 **Repositório no GitHub:** [testes-e2e-cypress-github-actions](https://github.com/Jussara0710/testes-e2e-cypress-github-actions)
+
 ---
 
 ### 💻 Tecnologias

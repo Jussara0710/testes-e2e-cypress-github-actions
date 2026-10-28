@@ -1,4 +1,4 @@
-const produtosPage = require('../pages/produtosPage')
+import produtosPage from '../pages/produtosPage'
 
 describe('Testes de Busca', () => {
     beforeEach(() => {

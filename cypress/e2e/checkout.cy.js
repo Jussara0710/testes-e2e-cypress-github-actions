@@ -4,6 +4,18 @@ import signupPage from '../pages/signupPage'
 import loginPage from '../pages/loginPage'
 
 describe('Funcionalidade de Checkout - Automation Exercise', () => {
+
+  const addressData = {
+    firstName: 'Jussara',
+    lastName: 'Sousa',
+    address: 'Rua dos Testes, 123',
+    country: 'United States',
+    state: 'Minas Gerais',
+    city: 'Belo Horizonte',
+    zipcode: '30000',
+    mobile: '31999999999'
+  }
+
   beforeEach(() => {
     cy.clearCookies()
     cy.clearLocalStorage()
@@ -18,8 +30,8 @@ describe('Funcionalidade de Checkout - Automation Exercise', () => {
     signupPage.visitPage()
     signupPage.startSignup('User Caso 15', email)
     signupPage.fillAccountDetails('Senha123')
-    signupPage.fillAddressDetails()
-    signupPage.elements.continueButton().click()
+    signupPage.fillAddressDetails(addressData)
+    signupPage.elements.continueButton().click({ force: true })
 
     // 2. Voltar à home, adicionar produto e ir para o checkout
     cy.visit('/')
@@ -43,15 +55,15 @@ describe('Funcionalidade de Checkout - Automation Exercise', () => {
     const email = `user16_${timestamp}@teste.com`
     const password = 'Senha123'
 
-    // 1. Criar conta e fazer logout (para termos uma conta para logar)
+    // 1. Criar conta e fazer logout
     signupPage.visitPage()
     signupPage.startSignup('User Caso 16', email)
     signupPage.fillAccountDetails(password)
-    signupPage.fillAddressDetails()
-    signupPage.elements.continueButton().click()
-    cy.get('a[href="/logout"]').click()
+    signupPage.fillAddressDetails(addressData)
+    signupPage.elements.continueButton().click({ force: true })
+    cy.get('a[href="/logout"]').click({ force: true })
 
-    // 2. Fazer Login (O foco real do Caso 16)
+    // 2. Fazer Login
     loginPage.visitPage()
     loginPage.login(email, password)
 
