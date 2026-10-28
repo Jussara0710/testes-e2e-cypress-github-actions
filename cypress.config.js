@@ -11,9 +11,15 @@ module.exports = defineConfig({
   },
   e2e: {
     baseUrl: 'https://www.automationexercise.com',
-    defaultCommandTimeout: 8000, // Aguarda até 8 segundos pelos elementos
-    pageLoadTimeout: 60000,       // Aguarda até 60 segundos pelo carregamento completo da página
-    experimentalStudio: true,     // Ativa a gravação visual de seletores e ações
+    redirectionLimit: 100,         // Evita o erro de excesso de redirecionamentos (loop 302 do site)
+    chromeWebSecurity: false,      // Evita bloqueios de segurança entre domínios/anúncios
+    defaultCommandTimeout: 15000,  // Dá até 15s para elementos responderem no servidor remoto
+    pageLoadTimeout: 120000,       // Dá até 2 minutos para carregamento de páginas lentas
+    experimentalStudio: true,      // Mantém a gravação visual de testes no modo interativo
+    retries: {
+      runMode: 2,                  // No GitHub Actions, repete até 2 vezes caso o site oscile
+      openMode: 0,
+    },
     setupNodeEvents(on, config) {
       require('cypress-mochawesome-reporter/plugin')(on);
     },
