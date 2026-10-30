@@ -1,56 +1,31 @@
-# Testes E2E - Automation Exercise com Cypress
+# Testes E2E - Automation Exercise
 
-Projeto prático de automação de testes End-to-End desenvolvido para validar os principais fluxos do e-commerce [Automation Exercise](https://automationexercise.com/). 
+[![Execução de Testes Cypress](https://github.com/Jussara0710/testes-e2e-cypress-github-actions/actions/workflows/cypress.yml/badge.svg)](https://github.com/Jussara0710/testes-e2e-cypress-github-actions/actions/workflows/cypress.yml)
 
-A estrutura utiliza o padrão **Page Object Model (POM)** para manter o código limpo e de fácil manutenção, além de rodar testes automatizados via **GitHub Actions** com relatórios visuais no **Mochawesome**.
+Suíte de testes ponta a ponta desenvolvida com Cypress para validar os principais fluxos do site [Automation Exercise](https://automationexercise.com/). 
 
-🔗 **Repositório no GitHub:** [testes-e2e-cypress-github-actions](https://github.com/Jussara0710/testes-e2e-cypress-github-actions)
+O projeto adota o padrão Page Object Model (POM) para manutenção dos seletores e fluxos, execução em esteira de CI via GitHub Actions e geração de relatórios com Mochawesome.
 
----
+### Tecnologias
+- Cypress
+- JavaScript
+- Node.js
+- Mochawesome Reporter
+- GitHub Actions
 
-### 💻 Tecnologias
-- **Cypress**
-- **JavaScript / Node.js**
-- **GitHub Actions** (CI/CD)
-- **Cypress Mochawesome Reporter** (Relatórios em HTML)
-
----
-
-### 🧪 Cenários Testados
-- Cadastro de novo usuário com dados dinâmicos
-- Login com credenciais válidas e inválidas
-- Logout e persistência de sessão
-- Busca e listagem de produtos
-- Inclusão de itens no carrinho e fluxo de checkout
+### Cenários cobertos
+- Cadastro de novo usuário e validação de e-mail já cadastrado
+- Login (sucesso e credenciais inválidas)
+- Logout e controle de sessão
+- Listagem e detalhes de produto
+- Busca de produtos
+- Fluxo de compra / checkout
 - Inscrição na newsletter
-- Exclusão da conta criada (limpeza pós-teste)
+- Exclusão de conta para limpeza da base
 
----
+### Como rodar o projeto
 
-### 🚀 Como Rodar Localmente
-
-1. Clone o projeto e acesse a pasta:
+1. Clone o repositório:
 ```bash
-git clone https://github.com/Jussara0710/testes-e2e-cypress-github-actions.git
+git clone [https://github.com/Jussara0710/testes-e2e-cypress-github-actions.git](https://github.com/Jussara0710/testes-e2e-cypress-github-actions.git)
 cd testes-e2e-cypress-github-actions
-```
-
-2. Instale as dependências:
-```bash
-npm install
-```
-
-3. Execute os testes:
-```bash
-# Execução no terminal em segundo plano (gera o relatório)
-npm test
-
-# Ou abrir o painel interativo do Cypress
-npx cypress open
-```
-
----
-
-### 📊 Relatório de Testes
-Após rodar com `npm test`, o relatório com gráficos e evidências fica disponível em:
-`cypress/reports/html/index.html` (basta dar dois cliques para abrir no navegador).

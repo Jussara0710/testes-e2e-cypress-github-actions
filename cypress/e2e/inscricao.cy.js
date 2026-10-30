@@ -1,13 +1,13 @@
 import homePage from '../pages/homePage'
 
-describe('Funcionalidade de Inscrição - Automation Exercise', () => {
+describe('Newsletter', () => {
   beforeEach(() => {
     cy.clearCookies()
     cy.clearLocalStorage()
     cy.visit('/')
   })
 
-  it('Caso 10: Deve realizar a inscrição com sucesso na home page', () => {
+  it('Caso 10: Deve realizar inscrição com sucesso na home', () => {
     homePage.descerAteORodape()
     homePage.inscreverEmail('aluno@pgats.com.br')
     homePage.validarInscricaoComSucesso()
